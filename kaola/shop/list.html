@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			#cont{width:1000px;border: solid 1px black;margin: 50px auto;}
+			.box{width: 250px;float: left;border: solid 1px black;box-sizing: border-box;text-align: center;}
+			.box img{width:40%;}
+			.box p{margin: 10px 0;height: 40px;overflow: hidden;line-height: 20px;}
+			.box em{display:block;width:100px;line-height: 26px;text-align: center;margin: 10px auto;font-style: normal;background: dodgerblue;color: #fff;}
+		</style>
+	</head>
+	<body>
+		<h3>这是购物车页面，<small><a href="car.html">去结算</a></small></h3><span><a href="../shouye.html">去首页</a></span>
+
+		<div id="cont">
+			<!--<div class="box">
+				<img src=""/>
+				<p></p>
+				<span></span>
+			</div>-->
+		</div>
+	</body>
+	<script src="libs/ajax.3.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="libs/cookie.js" type="text/javascript" charset="utf-8"></script>
+	
+	<script type="text/javascript">
+		
+		class List{
+			constructor(options){
+//				1.解析参数
+				this.cont = options.cont;
+				this.url = options.url;
+				
+//				2.请求数据
+				this.load();
+				
+//				5.绑定事件
+				this.addEvent();
+			}
+			load(){
+				var that = this;
+				ajax({
+					url:this.url,
+					success:function(res){
+//						3.请求成功之后解析数据,并渲染页面
+						that.res = JSON.parse(res)
+						that.display()
+					}
+				})
+			}
+			display(){
+//				4.遍历数据,拼接结构,渲染页面
+				var str = "";
+				for(var i=0;i<this.res.length;i++){
+					str += `<div class="box" index="${this.res[i].goodsId}">
+								<img src="${this.res[i].src}"/>
+								<p>${this.res[i].name}</p>
+								<span>${this.res[i].price}</span>
+								<em>加入购物车</em>
+							</div>`;
+				}
+				this.cont.innerHTML = str;
+			}
+			addEvent(){
+				var that = this;
+				this.cont.addEventListener("click",function(eve){
+					if(eve.target.nodeName == "EM"){
+//						6.被点击时,获取货号,存cookie
+						that.id = eve.target.parentNode.getAttribute("index");
+						that.setCookie()
+					}
+				})
+			}
+			setCookie(){
+//				因为要使用一条cookie存商品,所以数据选择数组里面放对象[{},{}]
+				this.goods = getCookie("goods");
+//				情况1:第一次添加
+				if(this.goods == ""){
+					this.goods = [{
+						id:this.id,
+						num:1
+					}];
+				}else{
+//					情况2:不是第一次添加
+					this.goods = JSON.parse(this.goods);
+//					新情况1：这次点击的是老数据
+					var onoff = true;
+					this.goods.forEach((v)=>{
+						if(v.id == this.id){
+							v.num++
+							onoff = false;
+						}
+					})
+					
+//					新情况2：这次点击的是新数据
+					if(onoff){
+						this.goods.push({
+							id:this.id,
+							num:1
+						})
+					}
+				}
+//				所有关于数组的操作结束之后,将数组转成字符再设置到cookie中
+				setCookie("goods",JSON.stringify(this.goods))
+			}
+		}
+		
+		new List({
+			cont:document.getElementById("cont"),
+			url:"http://localhost/test1901/kaola/shop/data/goods.json"
+		})
+		
+		
+//		跨页面读取数据，cookie
+//		列表页:
+//			点击加入,将商品的id存到cookie
+//			不是一个商品一条cookie
+//			一共只有一条cookie
+//			数组里面放对象,json
+			
+//		购物车页面:
+//			读取cookie中的id,跟总数据作比对
+		
+	</script>
+</html>

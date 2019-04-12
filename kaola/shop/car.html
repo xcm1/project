@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	<style type="text/css">
+			img{width: 60px;}
+			h2{margin: 30px 0;text-indent: 30px;}
+			em{display: block;width: 100px;line-height: 30px;text-align: center;background: deepskyblue;border-radius: 6px;margin: 0 auto;margin-top: 10px;font-style: normal;cursor: pointer;color: #fff;}
+			input[type="number"]{width:50px}
+		</style>
+	</head>
+	<body>
+		<h2>购物车<small>&nbsp;&nbsp;<a href="list.html" target="_blank">继续购物</a></small></h2>
+		<table border="1" cellspacing="0" width="1000" align="center">
+			<thead>
+				<tr>
+					<th></th>
+					<th width="100">商品图片</th>
+					<th>名字</th>
+					<th>价格</th>
+					<th width="120">数量</th>
+					<th>操作</th>
+				</tr>
+			</thead>
+			<tbody id="tbody">
+				<!--<tr>
+					<td><input type="checkbox" name="" id="" value="" /></td>
+					<td><img src=""/></td>
+					<td>名字</td>
+					<td>价格</td>
+					<td>1</td>
+					<td><em data-index="">删除</em></td>
+				</tr>-->
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2"><input type="checkbox" name="" id="" value="" />全部选中</td>
+					<td align="right">总价：</td>
+					<td>469</td>
+					<td>总数量：4</td>
+					<td><em>全部删除</em></td>
+				</tr>
+			</tfoot>
+		</table>
+	</body>
+	<script src="libs/ajax.3.0.js" type="text/javascript" charset="utf-8"></script>
+	<script src="libs/cookie.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		
+		class Car{
+			constructor(options){
+//				1.解析参数
+				this.tbody = options.tbody;
+				this.url = options.url;
+				
+//				2.请求数据
+				this.load();
+				
+//				5.绑定事件
+				this.addEvent();
+			}
+			load(){
+				var that = this;
+				ajax({
+					url:this.url,
+					success:function(res){
+						that.res = JSON.parse(res);
+//						3.获取cookie
+						that.getCookie();
+					}
+				})
+			}
+			getCookie(){
+//				获取cookie
+				this.goods = JSON.parse(getCookie("goods"));
+//				4.渲染页面
+				this.display()
+			}
+			display(){
+				var str = "";
+//				比对cookie和总数据
+				for(var i=0;i<this.res.length;i++){
+					for(var j=0;j<this.goods.length;j++){
+						if(this.res[i].goodsId == this.goods[j].id){
+							str += `<tr>
+										<td><input type="checkbox" name="" id="" value="" /></td>
+										<td><img src="${this.res[i].src}"/></td>
+										<td>${this.res[i].name}</td>
+										<td>${this.res[i].price}</td>
+										<td><input type="number" value="${this.goods[j].num}"></td>
+										<td><em data-index="${this.res[i].goodsId}">删除</em></td>
+									</tr>`
+						}
+					}
+				}
+				this.tbody.innerHTML = str;
+			}
+			addEvent(){
+				var that = this;
+				this.tbody.addEventListener("click",function(eve){
+					if(eve.target.nodeName == "EM"){
+//						找到点击商品的货号
+						that.id = eve.target.getAttribute("date-index");
+//						删除DOM元素
+						eve.target.parentNode.parentNode.remove();
+//						6.遍历cookie,找到符合条件的数据,做删除
+						that.changeCookie(function(index){
+//							8.删除并再次设置回去
+							that.goods.splice(index,1);
+						})
+					}
+				})
+				this.tbody.addEventListener("input",function(eve){
+					if(eve.target.type == "number"){
+//						10.先获取修改之后的数量,再获取当前商品的id
+						that.value = eve.target.value;
+						that.id = eve.target.parentNode.nextElementSibling.children[0].getAttribute("data-index");
+//						11.遍历cookie,找到符合条件的数据,做修改
+						that.changeCookie(function(index){
+							that.goods[index].num = that.value;
+						});
+					}
+				})
+			}
+			changeCookie(callback){
+//				7.找到cookie中符合条件的数据
+				for(var i=0;i<this.goods.length;i++){
+					if(this.goods[i].id == this.id){
+						break;
+					}
+				}
+				
+				callback(i);
+				
+//				9.再设置回去
+//				12.再设置回去
+				setCookie("goods",JSON.stringify(this.goods))
+			}
+		}
+		
+		new Car({
+			tbody:document.getElementById("tbody"),
+			url:"./data/goods.json"
+		})
+		
+	</script>
+</html>

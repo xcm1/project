@@ -1,0 +1,29 @@
+
+.margin{width:1200px;margin: 0 auto;}
+
+#top{margin: 10px 0 0 0;padding: 0 0 10px 0;border-bottom:1px solid #919191;}
+
+#top img{cursor: pointer; border: none;}
+
+
+#content .left{width: 465px;height: 500px;float: left;margin: 45px 0 0 130px;}
+
+
+
+#content .right h3{height: 35px; width: 415px; float: right;line-height: 35px; margin: 45px 100px 0 0;border-bottom: 2px solid red;
+    font-size: 20px;color: #a2a2a2;text-align: center; }
+#content .right h3 i{float: left;color: red;font-weight: 800;}
+#content .right h3 span{float: right;font:14px/40px "";}
+#content .right h3 span a{color:red;}
+#content .right .email{float: right;margin: 45px 100px 0 0;}    
+
+#content .right .email ul li{margin-bottom:15px;}
+#content .right .email ul li input{width:384px;height:40px;}
+#content .right .email ul li.qian input:nth-child(1){width:250px;height:40px;border:1px solid #ccc;}
+#content .right .email ul li.qian input:nth-child(2){width:130px;height:40px;border:1px solid #ccc;}
+#content .right .email ul li a{color:red;}
+#content .right .email ul li p{width:386px;height:40px;background: #666;font:16px/40px "";color:#fff;text-align: center;}
+#btn{background: red;border: 0;color: #fff;font-size: 16px;font-weight: 700;}
+
+
+
